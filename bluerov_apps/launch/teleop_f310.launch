@@ -3,7 +3,7 @@
 <launch>
   <!-- start the joystick driver -->
   <node respawn="true" pkg="joy" type="joy_node" name="joy_node" output="screen">
-    <param name="dev" value="/dev/f310controller" type="string"/>
+    <param name="dev" value="/dev/input/js0" type="string"/>
     <remap from="joy" to="joy_f310"/>
   </node>
 
