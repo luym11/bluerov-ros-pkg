@@ -12,6 +12,7 @@
 #include <sensor_msgs/Joy.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov_apps/teleop_joyConfig.h>
+#include <std_msgs/Int8.h>
 #include <mavros_msgs/CommandLong.h>
 #include <mavros_msgs/OverrideRCIn.h>
 
@@ -30,6 +31,7 @@ class TeleopJoy {
     uint16_t mapToPpm(double in);
     void configCallback(bluerov_apps::teleop_joyConfig &update, uint32_t level);
     void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
+		void joyCallback_pc(const std_msgs::Int8::ConstPtr& msg1);
 
     // node handle
     ros::NodeHandle nh;
@@ -42,6 +44,7 @@ class TeleopJoy {
     ros::Subscriber joy_sub;
     ros::Publisher rc_override_pub;
     ros::ServiceClient cmd_client;
+    ros::Subscriber joy_pc; 
 
     // constants
     enum {COMPONENT_ARM_DISARM=400}; // https://pixhawk.ethz.ch/mavlink/
@@ -67,6 +70,7 @@ TeleopJoy::TeleopJoy() {
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopJoy::joyCallback, this);
   rc_override_pub = nh.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override", 1);
   cmd_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
+  joy_pc = nh.subscribe<std_msgs::Int8>("/direction_to_go", 1, &TeleopJoy::joyCallback_pc, this);
 
   // initialize state variables
   mode = MODE_STABILIZE;
@@ -185,6 +189,7 @@ double TeleopJoy::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int in
   return expo * pow(value, 5) + (1.0 - expo) * value;
 }
 
+
 void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   // init previous_buttons
   if(previous_buttons.size() != joy->buttons.size()) {
@@ -248,6 +253,95 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
 
   msg.channels[4] = mode; // mode
   msg.channels[7] = camera_tilt; // camera tilt
+
+  rc_override_pub.publish(msg);
+}
+
+void TeleopJoy::joyCallback_pc(const std_msgs::Int8::ConstPtr& msg1) {
+  double x, y; 
+  x = 0; 
+  y = 0; 
+	int d = msg1->data; 
+
+  // send rc override message
+  mavros_msgs::OverrideRCIn msg;
+
+  if(d == 7){
+      msg.channels[0] = 1000; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 1000; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 1){
+      msg.channels[0] = 2000; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 2000; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 5){
+      msg.channels[0] = 1500; 
+      msg.channels[5] = 2000; 
+      msg.channels[6] = 1500; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 3){
+      msg.channels[0] = 1500; 
+      msg.channels[5] = 1000; 
+      msg.channels[6] = 1500; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 8){ // UNCHANGED NOW
+      msg.channels[0] = 1000; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 1000; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 2){
+      msg.channels[0] = 1000; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 1000; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 6){
+      msg.channels[0] = 1000; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 1000; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else if(d == 0){
+      msg.channels[0] = 1000; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 1000; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }else{
+      msg.channels[0] = 1500; 
+      msg.channels[5] = 1500; 
+      msg.channels[6] = 1500; 
+
+      msg.channels[1] = 1500; 
+      msg.channels[2] = 1500; 
+      msg.channels[3] = 1500; 
+  }
+
+  msg.channels[4] = MODE_ALT_HOLD; // mode using AT_HOLD
+  msg.channels[7] = 1500; // camera tilt keep middle
 
   rc_override_pub.publish(msg);
 }
