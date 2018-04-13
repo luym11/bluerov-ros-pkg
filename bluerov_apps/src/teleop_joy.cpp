@@ -267,81 +267,41 @@ void TeleopJoy::joyCallback_pc(const std_msgs::Int8::ConstPtr& msg1) {
   mavros_msgs::OverrideRCIn msg;
 
   if(d == 7){
-      msg.channels[0] = 1000; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 1000; 
-
-      msg.channels[1] = 1500; 
       msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
+      msg.channels[3] = 2000; 
   }else if(d == 1){
-      msg.channels[0] = 2000; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 2000; 
-
-      msg.channels[1] = 1500; 
       msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
+      msg.channels[3] = 1000; 
   }else if(d == 5){
-      msg.channels[0] = 1500; 
-      msg.channels[5] = 2000; 
-      msg.channels[6] = 1500; 
-
-      msg.channels[1] = 1500; 
-      msg.channels[2] = 1500; 
+      msg.channels[2] = 2000; 
       msg.channels[3] = 1500; 
   }else if(d == 3){
-      msg.channels[0] = 1500; 
-      msg.channels[5] = 1000; 
-      msg.channels[6] = 1500; 
-
-      msg.channels[1] = 1500; 
-      msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
-  }else if(d == 8){ // UNCHANGED NOW
-      msg.channels[0] = 1000; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 1000; 
-
-      msg.channels[1] = 1500; 
-      msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
+      msg.channels[2] = 1000; 
+      msg.channels[3] = 1500;  
+  }else if(d == 8){ 
+      msg.channels[2] = 1853; 
+      msg.channels[3] = 1853; 
   }else if(d == 2){
-      msg.channels[0] = 1000; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 1000; 
-
-      msg.channels[1] = 1500; 
-      msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
+      msg.channels[2] = 1853; 
+      msg.channels[3] = 1147;  
   }else if(d == 6){
-      msg.channels[0] = 1000; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 1000; 
-
-      msg.channels[1] = 1500; 
-      msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
+      msg.channels[2] = 1147; 
+      msg.channels[3] = 1853; 
   }else if(d == 0){
-      msg.channels[0] = 1000; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 1000; 
-
-      msg.channels[1] = 1500; 
-      msg.channels[2] = 1500; 
-      msg.channels[3] = 1500; 
+      msg.channels[2] = 1147; 
+      msg.channels[3] = 1147; 
   }else{
-      msg.channels[0] = 1500; 
-      msg.channels[5] = 1500; 
-      msg.channels[6] = 1500; 
-
-      msg.channels[1] = 1500; 
       msg.channels[2] = 1500; 
       msg.channels[3] = 1500; 
   }
 
-  msg.channels[4] = MODE_ALT_HOLD; // mode using AT_HOLD
-  msg.channels[7] = 1500; // camera tilt keep middle
+  msg.channels[4] = 1000; // mode using AT_HOLD
+  msg.channels[5] = 1500; // Hold the depth at current level
+// other stuff related to yaw, ...
+  msg.channels[0] = 1500; 
+  msg.channels[1] = 1500; 
+  msg.channels[6] = 1500; 
+  msg.channels[7] = 1500; 
 
   rc_override_pub.publish(msg);
 }
